@@ -29,10 +29,10 @@ index 4465af1..04b1e06 100644
  static void setfocus(Client *c);
  static void setfullscreen(Client *c, int fullscreen);
 +static void fullscreen(const Arg *arg);
+ static void setgaps(const Arg *arg);
  static void setlayout(const Arg *arg);
  static void setmfact(const Arg *arg);
- static void setup(void);
-@@ -1497,6 +1498,19 @@ setfullscreen(Client *c, int fullscreen)
+@@ -1533,6 +1534,19 @@ setfullscreen(Client *c, int fullscreen)
  	}
  }
  
@@ -50,7 +50,7 @@ index 4465af1..04b1e06 100644
 +}
 +
  void
- setlayout(const Arg *arg)
+ setgaps(const Arg *arg)
  {
 -- 
 2.22.0

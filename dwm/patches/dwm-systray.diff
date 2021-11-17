@@ -17,28 +17,23 @@ diff --git a/config.def.h b/config.def.h
 index 1c0b587..9e74de2 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -3,6 +3,11 @@
+@@ -2,6 +2,11 @@
+
  /* appearance */
  static const unsigned int borderpx  = 1;        /* border pixel of windows */
- static const unsigned int snap      = 32;       /* snap pixel */
 +static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 +static const unsigned int systrayonleft = 0;   	/* 0: systray in the right corner, >0: systray on left of status text */
 +static const unsigned int systrayspacing = 2;   /* systray spacing */
 +static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
 +static const int showsystray        = 1;     /* 0 means no systray */
- static const int showbar            = 1;        /* 0 means no bar */
- static const int topbar             = 1;        /* 0 means bottom bar */
- static const char *fonts[]          = { "monospace:size=10" };
-@@ -112,4 +117,3 @@ static Button buttons[] = {
- 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
- 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
- };
--
+ static const int startwithgaps[]    = { 0 };	/* 1 means gaps are used by default, this can be customized for each tag */
+ static const unsigned int gappx[]   = { 10 };   /* default gap between windows in pixels, this can be customized for each tag */
+ static const unsigned int snap      = 32;       /* snap pixel */
 diff --git a/dwm.c b/dwm.c
 index b0b3466..1e2a32d 100644
 --- a/dwm.c
 +++ b/dwm.c
-@@ -57,12 +57,30 @@
+@@ -57,3 +57,19 @@
  #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
  #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
  
@@ -58,6 +53,7 @@ index b0b3466..1e2a32d 100644
 +#define VERSION_MINOR               0
 +#define XEMBED_EMBEDDED_VERSION (VERSION_MAJOR << 16) | VERSION_MINOR
 +
+@@ -60,9 +76,11 @@
  /* enums */
  enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
  enum { SchemeNorm, SchemeSel }; /* color schemes */
@@ -231,10 +227,8 @@ index b0b3466..1e2a32d 100644
  	if (!c)
  		return;
  	if (cme->message_type == netatom[NetWMState]) {
-@@ -568,7 +656,7 @@ configurenotify(XEvent *e)
- 				for (c = m->clients; c; c = c->next)
- 					if (c->isfullscreen)
- 						resizeclient(c, m->mx, m->my, m->mw, m->mh);
+@@ -568,5 +675,5 @@
+                         for (m = mons; m; m = m->next) {
 -				XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, m->ww, bh);
 +				resizebarwin(m);
  			}
@@ -528,9 +522,7 @@ index b0b3466..1e2a32d 100644
  	/* init bars */
  	updatebars();
  	updatestatus();
-@@ -1704,7 +1891,18 @@ togglebar(const Arg *arg)
- {
- 	selmon->showbar = !selmon->showbar;
+@@ -1704,5 +1985,16 @@ togglebar(const Arg *arg)
  	updatebarpos(selmon);
 -	XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww, bh);
 +	resizebarwin(selmon);
