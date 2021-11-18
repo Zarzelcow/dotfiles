@@ -1,0 +1,5 @@
+font:
+  normal:
+    family: "JetBrains Mono Nerd Font"
+import:
+  - ~/.config/alacritty/themes/dark.yml
